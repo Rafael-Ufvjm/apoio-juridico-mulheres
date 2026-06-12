@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: jurisapoio
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+jwt:
+  segredo: ${JWT_SEGREDO}
+  expiracao-ms: ${JWT_EXPIRACAO_MS:86400000}
+
+upload:
+  diretorio: ${UPLOAD_DIR:./uploads}

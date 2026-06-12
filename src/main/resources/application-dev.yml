@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${DB_NAME:jurisapoio_dev}
+    username: ${DB_USERNAME:jurisapoio}
+    password: ${DB_PASSWORD:jurisapoio}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    baseline-on-migrate: true
+
+jwt:
+  segredo: ${JWT_SEGREDO:dev_segredo_base64_nao_usar_em_producao_nao_usar_aqui}
+  expiracao-ms: 86400000
+
+upload:
+  diretorio: ./uploads
+
+logging:
+  level:
+    br.edu.ufvjm.jurisapoio: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
