@@ -3,6 +3,11 @@ package br.edu.ufvjm.jurisapoio.controller;
 import br.edu.ufvjm.jurisapoio.dto.request.CasoTriagemRequest;
 import br.edu.ufvjm.jurisapoio.dto.request.EncerrarCasoRequest;
 import br.edu.ufvjm.jurisapoio.dto.response.CasoResponse;
+import br.edu.ufvjm.jurisapoio.entity.Usuario;
+import br.edu.ufvjm.jurisapoio.entity.Vitima;
+import br.edu.ufvjm.jurisapoio.exception.ResourceNotFoundException;
+import br.edu.ufvjm.jurisapoio.repository.UsuarioRepository;
+import br.edu.ufvjm.jurisapoio.repository.VitimaRepository;
 import br.edu.ufvjm.jurisapoio.service.CasoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +27,8 @@ import java.util.UUID;
 public class CasoController {
 
     private final CasoService casoService;
+    private final VitimaRepository vitimaRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @PostMapping
     @PreAuthorize("hasRole('VITIMA')")
@@ -29,11 +36,10 @@ public class CasoController {
             @Valid @RequestBody CasoTriagemRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: Extrair UUID da vítima autenticada pelo email de userDetails.
-        //       RN01: delegar para casoService.abrirCaso(vitimaId, request).
-        //       RN07: gerar protocolo único no service.
-        //       Retornar 201 CREATED com CasoResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        Vitima vitima = vitimaRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Vítima não encontrada com o email fornecido."));
+        CasoResponse response = casoService.abrirCaso(vitima.getId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
@@ -41,11 +47,10 @@ public class CasoController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: Extrair UUID do solicitante autenticado pelo email.
-        //       Delegar para casoService.buscarPorId(id, solicitanteId).
-        //       Service verifica se o solicitante tem acesso ao caso (vítima do caso ou advogado atribuído ou ADMIN).
-        //       Retornar 200 OK com CasoResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        Usuario solicitante = usuarioRepository.findByEmailAndAtivoTrue(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário solicitante não encontrado."));
+        CasoResponse response = casoService.buscarPorId(id, solicitante.getId());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/meus")
@@ -53,10 +58,10 @@ public class CasoController {
     public ResponseEntity<List<CasoResponse>> listarCasosDaVitima(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: Extrair UUID da vítima autenticada.
-        //       Delegar para casoService.listarCasosDaVitima(vitimaId).
-        //       Retornar 200 OK com lista.
-        throw new UnsupportedOperationException("Não implementado");
+        Vitima vitima = vitimaRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Vítima não encontrada."));
+        List<CasoResponse> response = casoService.listarCasosDaVitima(vitima.getId());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/encerrar")
@@ -65,11 +70,10 @@ public class CasoController {
             @Valid @RequestBody EncerrarCasoRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: Extrair UUID do solicitante autenticado pelo email de userDetails.
-        //       RN12: delegar para casoService.encerrarCaso(id, solicitanteId, request).
-        //       RN13: MensagemService.removerConteudoPorCasoId é chamado dentro do service.
-        //       Retornar 200 OK com CasoResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        Usuario solicitante = usuarioRepository.findByEmailAndAtivoTrue(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário solicitante não encontrado."));
+        CasoResponse response = casoService.encerrarCaso(id, solicitante.getId(), request);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/advogado/{advogadoId}")
@@ -78,8 +82,7 @@ public class CasoController {
             @PathVariable UUID id,
             @PathVariable UUID advogadoId
     ) {
-        // TODO: RN10: delegar para casoService.atribuirAdvogado(id, advogadoId).
-        //       Retornar 200 OK com CasoResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        CasoResponse response = casoService.atribuirAdvogado(id, advogadoId);
+        return ResponseEntity.ok(response);
     }
 }
