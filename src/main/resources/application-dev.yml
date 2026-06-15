@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME:jurisapoio_dev}
+    url: jdbc:postgresql://localhost:5433/${DB_NAME:jurisapoio_dev}
     username: ${DB_USERNAME:jurisapoio}
     password: ${DB_PASSWORD:jurisapoio}
   jpa:
