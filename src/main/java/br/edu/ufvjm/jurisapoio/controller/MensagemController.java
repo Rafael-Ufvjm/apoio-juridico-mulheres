@@ -2,6 +2,11 @@ package br.edu.ufvjm.jurisapoio.controller;
 
 import br.edu.ufvjm.jurisapoio.dto.request.MensagemRequest;
 import br.edu.ufvjm.jurisapoio.dto.response.MensagemResponse;
+import br.edu.ufvjm.jurisapoio.entity.AdvogadoVoluntario;
+import br.edu.ufvjm.jurisapoio.entity.Usuario;
+import br.edu.ufvjm.jurisapoio.enums.PerfilUsuario;
+import br.edu.ufvjm.jurisapoio.exception.ResourceNotFoundException;
+import br.edu.ufvjm.jurisapoio.repository.UsuarioRepository;
 import br.edu.ufvjm.jurisapoio.service.MensagemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,7 @@ import java.util.UUID;
 public class MensagemController {
 
     private final MensagemService mensagemService;
+    private final UsuarioRepository usuarioRepository;
 
     @PostMapping
     public ResponseEntity<MensagemResponse> enviarMensagem(
@@ -27,12 +33,15 @@ public class MensagemController {
             @Valid @RequestBody MensagemRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: Extrair UUID do remetente autenticado pelo email.
-        //       Delegar para mensagemService.enviarMensagem(casoId, remetenteId, request).
-        //       RN11: verificação de caso encerrado feita no service.
-        //       Conteúdo criptografado no service com AES-256-GCM via CriptografiaUtil.
-        //       Retornar 201 CREATED com MensagemResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        Usuario remetente = usuarioRepository.findByEmailAndAtivoTrue(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
+
+        PerfilUsuario perfil = remetente instanceof AdvogadoVoluntario
+                ? PerfilUsuario.ADVOGADO_VOLUNTARIO
+                : PerfilUsuario.VITIMA;
+
+        MensagemResponse response = mensagemService.enviarMensagem(casoId, remetente.getId(), perfil, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
@@ -40,10 +49,9 @@ public class MensagemController {
             @PathVariable UUID casoId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: Extrair UUID do solicitante autenticado pelo email.
-        //       Delegar para mensagemService.listarMensagensCaso(casoId, solicitanteId).
-        //       RN13: mensagens removidas terão conteudo = null na resposta.
-        //       Retornar 200 OK com lista ordenada por dataEnvio ASC.
-        throw new UnsupportedOperationException("Não implementado");
+        Usuario solicitante = usuarioRepository.findByEmailAndAtivoTrue(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
+
+        return ResponseEntity.ok(mensagemService.listarMensagensCaso(casoId, solicitante.getId()));
     }
 }
