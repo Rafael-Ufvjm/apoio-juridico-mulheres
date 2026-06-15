@@ -22,9 +22,8 @@ public class AdminController {
 
     @GetMapping("/advogados/pendentes")
     public ResponseEntity<List<AdvogadoResponse>> listarAdvogadosPendentes() {
-        // TODO: Delegar para adminService.listarAdvogadosPendentes().
-        //       Retornar 200 OK com lista de advogados aguardando aprovação.
-        throw new UnsupportedOperationException("Não implementado");
+        List<AdvogadoResponse> pendentes = adminService.listarAdvogadosPendentes();
+        return ResponseEntity.ok(pendentes);
     }
 
     @PutMapping("/advogados/{id}/aprovar")
@@ -32,9 +31,7 @@ public class AdminController {
             @PathVariable UUID id,
             @Valid @RequestBody AprovarAdvogadoRequest request
     ) {
-        // TODO: RN18: delegar para adminService.processarAprovacao(id, request).
-        //       Service verifica justificativa obrigatória em caso de rejeição.
-        //       Retornar 200 OK com AdvogadoResponse atualizado.
-        throw new UnsupportedOperationException("Não implementado");
+        AdvogadoResponse response = adminService.processarAprovacao(id, request);
+        return ResponseEntity.ok(response);
     }
 }

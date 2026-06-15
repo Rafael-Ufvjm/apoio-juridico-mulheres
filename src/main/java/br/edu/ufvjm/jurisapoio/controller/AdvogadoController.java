@@ -27,10 +27,8 @@ public class AdvogadoController {
     public ResponseEntity<AdvogadoResponse> obterPerfil(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: Extrair UUID do advogado autenticado pelo email.
-        //       Delegar para advogadoService.obterPerfil(advogadoId).
-        //       Retornar 200 OK com AdvogadoResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        AdvogadoResponse response = advogadoService.obterPerfil(userDetails.getUsername());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/disponibilidade")
@@ -39,11 +37,8 @@ public class AdvogadoController {
             @RequestParam Disponibilidade disponibilidade,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: Extrair UUID do advogado autenticado.
-        //       RN15: advogado pode alterar disponibilidade se statusAprovacao == ATIVO.
-        //       Delegar para advogadoService.atualizarDisponibilidade(advogadoId, disponibilidade).
-        //       Retornar 200 OK com AdvogadoResponse atualizado.
-        throw new UnsupportedOperationException("Não implementado");
+        AdvogadoResponse response = advogadoService.atualizarDisponibilidade(userDetails.getUsername(), disponibilidade);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/casos")
@@ -51,9 +46,8 @@ public class AdvogadoController {
     public ResponseEntity<List<CasoResponse>> listarCasosDoAdvogado(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: Extrair UUID do advogado autenticado.
-        //       Delegar para casoService.listarCasosDoAdvogado(advogadoId).
-        //       Retornar 200 OK com lista de casos atribuídos ao advogado.
-        throw new UnsupportedOperationException("Não implementado");
+        AdvogadoResponse response = advogadoService.obterPerfil(userDetails.getUsername());
+        List<CasoResponse> casos = casoService.listarCasosAdvogado(response.id());
+        return ResponseEntity.ok(casos);
     }
 }

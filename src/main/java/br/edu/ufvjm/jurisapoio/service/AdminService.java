@@ -2,6 +2,7 @@ package br.edu.ufvjm.jurisapoio.service;
 
 import br.edu.ufvjm.jurisapoio.dto.request.AprovarAdvogadoRequest;
 import br.edu.ufvjm.jurisapoio.dto.response.AdvogadoResponse;
+import br.edu.ufvjm.jurisapoio.entity.AdvogadoVoluntario;
 import br.edu.ufvjm.jurisapoio.enums.StatusAprovacao;
 import br.edu.ufvjm.jurisapoio.exception.BusinessException;
 import br.edu.ufvjm.jurisapoio.exception.ResourceNotFoundException;
@@ -22,20 +23,49 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public List<AdvogadoResponse> listarAdvogadosPendentes() {
-        // TODO: Buscar todos com statusAprovacao = PENDENTE via advogadoVoluntarioRepository.findAllByStatusAprovacao().
-        //       Mapear cada entidade para AdvogadoResponse e retornar lista.
-        throw new UnsupportedOperationException("Não implementado");
+        return advogadoVoluntarioRepository.findAllByStatusAprovacao(StatusAprovacao.PENDENTE)
+                .stream()
+                .map(advogado -> new AdvogadoResponse(
+                        advogado.getId(),
+                        advogado.getNome(),
+                        advogado.getNumeroOAB(),
+                        advogado.getStatusAprovacao(),
+                        advogado.getEspecialidades(),
+                        advogado.getDisponibilidade(),
+                        advogado.getDataAprovacao()
+                ))
+                .toList();
     }
 
     @Transactional
     public AdvogadoResponse processarAprovacao(UUID advogadoId, AprovarAdvogadoRequest request) {
-        // TODO: Buscar AdvogadoVoluntario pelo advogadoId ou lançar ResourceNotFoundException.
-        //       Verificar que statusAprovacao == PENDENTE, caso contrário BusinessException("Advogado já foi processado.").
-        //       RN18: se request.aprovado() == false, verificar que request.justificativa() não está em branco.
-        //       Se justificativa ausente na recusa, lançar BusinessException("Justificativa obrigatória para recusa.").
-        //       Se aprovado: setar statusAprovacao = ATIVO e dataAprovacao = now().
-        //       Se recusado: setar statusAprovacao = RECUSADO e justificativaRejeicao = request.justificativa().
-        //       Persistir e retornar AdvogadoResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        AdvogadoVoluntario advogado = advogadoVoluntarioRepository.findById(advogadoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Advogado não encontrado com ID: " + advogadoId));
+
+        if (advogado.getStatusAprovacao() != StatusAprovacao.PENDENTE) {
+            throw new BusinessException("Advogado já foi processado.");
+        }
+
+        if (Boolean.FALSE.equals(request.aprovado())) {
+            if (request.justificativa() == null || request.justificativa().trim().isEmpty()) {
+                throw new BusinessException("Justificativa obrigatória para recusa.");
+            }
+            advogado.setStatusAprovacao(StatusAprovacao.RECUSADO);
+            advogado.setJustificativaRejeicao(request.justificativa().trim());
+        } else {
+            advogado.setStatusAprovacao(StatusAprovacao.ATIVO);
+            advogado.setDataAprovacao(LocalDateTime.now());
+        }
+
+        AdvogadoVoluntario salvo = advogadoVoluntarioRepository.save(advogado);
+        return new AdvogadoResponse(
+                salvo.getId(),
+                salvo.getNome(),
+                salvo.getNumeroOAB(),
+                salvo.getStatusAprovacao(),
+                salvo.getEspecialidades(),
+                salvo.getDisponibilidade(),
+                salvo.getDataAprovacao()
+        );
     }
 }

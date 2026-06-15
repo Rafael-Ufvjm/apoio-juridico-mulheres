@@ -2,6 +2,9 @@ package br.edu.ufvjm.jurisapoio.service;
 
 import br.edu.ufvjm.jurisapoio.dto.response.AdvogadoResponse;
 import br.edu.ufvjm.jurisapoio.entity.AdvogadoVoluntario;
+import br.edu.ufvjm.jurisapoio.enums.Disponibilidade;
+import br.edu.ufvjm.jurisapoio.enums.StatusAprovacao;
+import br.edu.ufvjm.jurisapoio.exception.BusinessException;
 import br.edu.ufvjm.jurisapoio.exception.ResourceNotFoundException;
 import br.edu.ufvjm.jurisapoio.repository.AdvogadoVoluntarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +21,41 @@ public class AdvogadoService {
 
     @Transactional(readOnly = true)
     public AdvogadoResponse buscarPorId(UUID id) {
-        // TODO: Buscar AdvogadoVoluntario pelo id ou lançar ResourceNotFoundException.
-        //       Mapear para AdvogadoResponse e retornar.
-        throw new UnsupportedOperationException("Não implementado");
+        AdvogadoVoluntario advogado = advogadoVoluntarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Advogado não encontrado com ID: " + id));
+        return mapearParaResponse(advogado);
+    }
+
+    @Transactional(readOnly = true)
+    public AdvogadoResponse obterPerfil(String email) {
+        AdvogadoVoluntario advogado = advogadoVoluntarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Advogado não encontrado com email: " + email));
+        return mapearParaResponse(advogado);
+    }
+
+    @Transactional
+    public AdvogadoResponse atualizarDisponibilidade(String email, Disponibilidade disponibilidade) {
+        AdvogadoVoluntario advogado = advogadoVoluntarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Advogado não encontrado com email: " + email));
+
+        if (advogado.getStatusAprovacao() != StatusAprovacao.ATIVO) {
+            throw new BusinessException("Apenas advogados com perfil aprovado (ATIVO) podem alterar a disponibilidade.");
+        }
+
+        advogado.setDisponibilidade(disponibilidade);
+        AdvogadoVoluntario salvo = advogadoVoluntarioRepository.save(advogado);
+        return mapearParaResponse(salvo);
     }
 
     public AdvogadoResponse mapearParaResponse(AdvogadoVoluntario advogado) {
-        // TODO: Converter entidade AdvogadoVoluntario em AdvogadoResponse.
-        //       Campos: id, nome, numeroOAB, statusAprovacao, especialidades, disponibilidade, dataAprovacao.
-        throw new UnsupportedOperationException("Não implementado");
+        return new AdvogadoResponse(
+                advogado.getId(),
+                advogado.getNome(),
+                advogado.getNumeroOAB(),
+                advogado.getStatusAprovacao(),
+                advogado.getEspecialidades(),
+                advogado.getDisponibilidade(),
+                advogado.getDataAprovacao()
+        );
     }
 }
