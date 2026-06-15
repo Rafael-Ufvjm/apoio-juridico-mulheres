@@ -236,4 +236,15 @@ class CasoServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Acesso negado a este caso.");
     }
+
+    @Test
+    void listarCasosPendentes_DeveRetornarListaDeCasosAguardando() {
+        when(casoRepository.findAllByStatus(StatusCaso.AGUARDANDO)).thenReturn(List.of(caso));
+
+        List<CasoResponse> response = casoService.listarCasosPendentes();
+
+        assertThat(response).isNotEmpty();
+        assertThat(response.get(0).status()).isEqualTo(StatusCaso.AGUARDANDO);
+        verify(casoRepository, times(1)).findAllByStatus(StatusCaso.AGUARDANDO);
+    }
 }

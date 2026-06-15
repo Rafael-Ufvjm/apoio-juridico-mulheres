@@ -187,6 +187,14 @@ public class CasoService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<CasoResponse> listarCasosPendentes() {
+        return casoRepository.findAllByStatus(StatusCaso.AGUARDANDO)
+                .stream()
+                .map(this::mapearParaResponse)
+                .toList();
+    }
+
     public CasoResponse mapearParaResponse(Caso caso) {
         VitimaResponse vitimaResponse = null;
         if (caso.getVitima() != null) {

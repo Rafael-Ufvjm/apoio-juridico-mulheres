@@ -5,9 +5,11 @@ import br.edu.ufvjm.jurisapoio.dto.request.EncerrarCasoRequest;
 import br.edu.ufvjm.jurisapoio.dto.response.CasoResponse;
 import br.edu.ufvjm.jurisapoio.entity.Usuario;
 import br.edu.ufvjm.jurisapoio.entity.Vitima;
+import br.edu.ufvjm.jurisapoio.entity.AdvogadoVoluntario;
 import br.edu.ufvjm.jurisapoio.exception.ResourceNotFoundException;
 import br.edu.ufvjm.jurisapoio.repository.UsuarioRepository;
 import br.edu.ufvjm.jurisapoio.repository.VitimaRepository;
+import br.edu.ufvjm.jurisapoio.repository.AdvogadoVoluntarioRepository;
 import br.edu.ufvjm.jurisapoio.service.CasoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class CasoController {
     private final CasoService casoService;
     private final VitimaRepository vitimaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AdvogadoVoluntarioRepository advogadoVoluntarioRepository;
 
     @PostMapping
     @PreAuthorize("hasRole('VITIMA')")
@@ -83,6 +86,25 @@ public class CasoController {
             @PathVariable UUID advogadoId
     ) {
         CasoResponse response = casoService.atribuirAdvogado(id, advogadoId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/pendentes")
+    @PreAuthorize("hasAnyRole('ADVOGADO_VOLUNTARIO', 'ADMIN')")
+    public ResponseEntity<List<CasoResponse>> listarCasosPendentes() {
+        List<CasoResponse> response = casoService.listarCasosPendentes();
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/aceitar")
+    @PreAuthorize("hasRole('ADVOGADO_VOLUNTARIO')")
+    public ResponseEntity<CasoResponse> aceitarCaso(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        AdvogadoVoluntario advogado = advogadoVoluntarioRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Advogada não encontrada com o email logado."));
+        CasoResponse response = casoService.atribuirAdvogado(id, advogado.getId());
         return ResponseEntity.ok(response);
     }
 }
