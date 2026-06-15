@@ -25,20 +25,15 @@ public class ConteudoJuridicoController {
     public ResponseEntity<List<ConteudoJuridicoResponse>> listar(
             @RequestParam(required = false) CategoriaConteudo categoria
     ) {
-        // TODO: Retornar apenas conteúdos publicados (publicado = true).
-        //       Filtrar por categoria se fornecida.
-        //       Delegar para conteudoJuridicoService.listar(categoria).
-        //       Endpoint público — não requer autenticação.
-        //       Retornar 200 OK com lista.
-        throw new UnsupportedOperationException("Não implementado");
+        List<ConteudoJuridicoResponse> resultado = categoria != null
+                ? conteudoJuridicoService.listarPorCategoria(categoria)
+                : conteudoJuridicoService.listarPublicados();
+        return ResponseEntity.ok(resultado);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ConteudoJuridicoResponse> buscarPorId(@PathVariable UUID id) {
-        // TODO: Delegar para conteudoJuridicoService.buscarPorId(id).
-        //       Retornar apenas se publicado = true (usuário não autenticado não pode ver rascunhos).
-        //       Retornar 200 OK com ConteudoJuridicoResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        return ResponseEntity.ok(conteudoJuridicoService.buscarPorId(id));
     }
 
     @PostMapping
@@ -46,9 +41,13 @@ public class ConteudoJuridicoController {
     public ResponseEntity<ConteudoJuridicoResponse> criar(
             @Valid @RequestBody ConteudoJuridicoRequest request
     ) {
-        // TODO: Delegar para conteudoJuridicoService.criar(request).
-        //       Retornar 201 CREATED com ConteudoJuridicoResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        return ResponseEntity.status(HttpStatus.CREATED).body(conteudoJuridicoService.criar(request));
+    }
+
+    @PatchMapping("/{id}/publicar")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ConteudoJuridicoResponse> publicar(@PathVariable UUID id) {
+        return ResponseEntity.ok(conteudoJuridicoService.publicar(id));
     }
 
     @PutMapping("/{id}")
@@ -57,16 +56,13 @@ public class ConteudoJuridicoController {
             @PathVariable UUID id,
             @Valid @RequestBody ConteudoJuridicoRequest request
     ) {
-        // TODO: Delegar para conteudoJuridicoService.atualizar(id, request).
-        //       Retornar 200 OK com ConteudoJuridicoResponse atualizado.
-        throw new UnsupportedOperationException("Não implementado");
+        return ResponseEntity.ok(conteudoJuridicoService.atualizar(id, request));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
-        // TODO: Delegar para conteudoJuridicoService.deletar(id).
-        //       Retornar 204 NO CONTENT.
-        throw new UnsupportedOperationException("Não implementado");
+        conteudoJuridicoService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }
