@@ -1,0 +1,865 @@
+{
+	"info": {
+		"_postman_id": "7d9bdf1c-2234-4b57-bc22-b5e14dc9cb2c",
+		"name": "Apoio Jurídico Mulheres API",
+		"description": "Coleção de testes do Postman para a API do projeto de Apoio Jurídico às Mulheres.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Autenticação",
+			"item": [
+				{
+					"name": "Login (Admin/Vítima/Advogado)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.accessToken) {",
+									"        pm.environment.set(\"token\", jsonData.accessToken);",
+									"        console.log(\"Token de acesso atualizado com sucesso!\");",
+									"    }",
+									"    if (jsonData.refreshToken) {",
+									"        pm.environment.set(\"refreshToken\", jsonData.refreshToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"senha\": \"{{admin_senha}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Realiza o login de um usuário (Admin, Vítima ou Advogado). Atualiza a variável `token` no ambiente automaticamente."
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastro de Vítima",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.accessToken) {",
+									"        pm.environment.set(\"token\", jsonData.accessToken);",
+									"        console.log(\"Token de acesso da vítima atualizado!\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"vitima_teste@email.com\",\n    \"senha\": \"senhaForte123\",\n    \"nomeAnonimo\": \"Flor de Lótus\",\n    \"estadoResidencia\": \"MG\",\n    \"aceitouTermos\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/cadastro/vitima",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"cadastro",
+								"vitima"
+							]
+						},
+						"description": "Cadastra uma nova vítima de forma anônima. Atualiza a variável `token` automaticamente após o cadastro bem-sucedido."
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastro de Advogado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.accessToken) {",
+									"        pm.environment.set(\"token\", jsonData.accessToken);",
+									"        console.log(\"Token de acesso do advogado atualizado!\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"advogado_teste@email.com\",\n    \"senha\": \"senhaForte123\",\n    \"nome\": \"Dr. Nome Advogado\",\n    \"numeroOAB\": \"123456/MG\",\n    \"especialidades\": \"Direito de Família, Violência Doméstica\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/cadastro/advogado",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"cadastro",
+								"advogado"
+							]
+						},
+						"description": "Cadastra um novo advogado voluntário. O cadastro passará por aprovação do administrador."
+					},
+					"response": []
+				},
+				{
+					"name": "Renovar Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.accessToken) {",
+									"        pm.environment.set(\"token\", jsonData.accessToken);",
+									"        console.log(\"Token de acesso renovado!\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{refreshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/token/renovar",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"token",
+								"renovar"
+							]
+						},
+						"description": "Renova o access token utilizando o refresh token informado no header Authorization."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Listar Advogados Pendentes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/advogados/pendentes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"advogados",
+								"pendentes"
+							]
+						},
+						"description": "Lista todos os advogados voluntários com aprovação pendente."
+					},
+					"response": []
+				},
+				{
+					"name": "Aprovar/Recusar Advogado",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"aprovado\": true,\n    \"justificativa\": \"Inscrição ativa e regularizada na OAB/MG\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/advogados/{{advogadoId}}/aprovar",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"advogados",
+								"{{advogadoId}}",
+								"aprovar"
+							]
+						},
+						"description": "Processa a aprovação ou recusa de um advogado voluntário. Se recusado, a justificativa é obrigatória."
+					},
+					"response": []
+				},
+				{
+					"name": "Atribuir Advogado a Caso",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}/advogado/{{advogadoId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}",
+								"advogado",
+								"{{advogadoId}}"
+							]
+						},
+						"description": "Atribui um advogado voluntário a um determinado caso de violência."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vítimas",
+			"item": [
+				{
+					"name": "Obter Perfil Vítima",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/vitimas/perfil",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"vitimas",
+								"perfil"
+							]
+						},
+						"description": "Obtém as informações do perfil da vítima autenticada."
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir Conta Vítima",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/vitimas/conta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"vitimas",
+								"conta"
+							]
+						},
+						"description": "Exclui/desativa logicamente a conta da vítima autenticada (soft delete) e revoga seus tokens."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Advogados",
+			"item": [
+				{
+					"name": "Obter Perfil Advogado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/advogados/perfil",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"advogados",
+								"perfil"
+							]
+						},
+						"description": "Obtém o perfil do advogado voluntário autenticado."
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Disponibilidade",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/advogados/disponibilidade?disponibilidade=ONLINE",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"advogados",
+								"disponibilidade"
+							],
+							"query": [
+								{
+									"key": "disponibilidade",
+									"value": "ONLINE",
+									"description": "Valores possíveis: ONLINE, OFFLINE, OCUPADO"
+								}
+							]
+						},
+						"description": "Atualiza o status de disponibilidade do advogado voluntário."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Casos do Advogado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/advogados/casos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"advogados",
+								"casos"
+							]
+						},
+						"description": "Lista todos os casos de apoio jurídico atribuídos ao advogado autenticado."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Casos",
+			"item": [
+				{
+					"name": "Abrir Caso (Triagem)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tipoViolencia\": \"FISICA\",\n    \"descricao\": \"Relato de violência física sofrida no ambiente familiar, necessitando de orientações sobre medida protetiva urgente.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/casos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos"
+							]
+						},
+						"description": "Inicia a triagem de um caso. Apenas vítimas podem criar casos e apenas 1 caso pode estar ativo simultaneamente por vítima.\nValores de tipoViolencia: FISICA, PSICOLOGICA, SEXUAL, PATRIMONIAL, MORAL"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Caso por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}"
+							]
+						},
+						"description": "Busca os detalhes de um caso específico. Requer permissão com base na relação do usuário com o caso."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Meus Casos (Vítima)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/meus",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"meus"
+							]
+						},
+						"description": "Lista os casos criados pela vítima autenticada."
+					},
+					"response": []
+				},
+				{
+					"name": "Encerrar Caso",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resultado\": \"Caso encerrado após o direcionamento bem-sucedido para a rede pública de apoio e obtenção de medida protetiva.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}/encerrar",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}",
+								"encerrar"
+							]
+						},
+						"description": "Encerra o caso informando uma justificativa/resultado obrigatório."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mensagens (Chat do Caso)",
+			"item": [
+				{
+					"name": "Enviar Mensagem no Caso",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"conteudo\": \"Gostaria de saber quais documentos devo levar na delegacia.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}/mensagens",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}",
+								"mensagens"
+							]
+						},
+						"description": "Envia uma mensagem no chat de um caso ativo. A mensagem é criptografada de ponta a ponta na API."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Mensagens do Caso",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}/mensagens",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}",
+								"mensagens"
+							]
+						},
+						"description": "Lista o histórico de mensagens trocadas no chat do caso."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Conteúdo Jurídico",
+			"item": [
+				{
+					"name": "Listar Conteúdos",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/conteudos?categoria=MEDIDA_PROTETIVA",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"conteudos"
+							],
+							"query": [
+								{
+									"key": "categoria",
+									"value": "MEDIDA_PROTETIVA",
+									"description": "Opcional. Valores: MEDIDA_PROTETIVA, BOLETIM_OCORRENCIA, DIREITOS_LMP, VIOLENCIA_DIGITAL, GUARDA_FILHOS, DIVORCIO, FAQ"
+								}
+							]
+						},
+						"description": "Retorna uma lista de conteúdos publicados. Opcionalmente filtrado por categoria."
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Conteúdo por ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/conteudos/{{conteudoId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"conteudos",
+								"{{conteudoId}}"
+							]
+						},
+						"description": "Busca os detalhes de um conteúdo jurídico pelo seu ID único."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Conteúdo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Como Solicitar Medida Protetiva Online\",\n    \"corpo\": \"As medidas protetivas podem ser solicitadas eletronicamente na maioria dos estados...\",\n    \"categoria\": \"MEDIDA_PROTETIVA\",\n    \"tags\": \"violencia, lei maria da penha, proteção\",\n    \"nivelLinguagem\": \"Fácil\",\n    \"revisadoPor\": \"Maria Silva\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/conteudos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"conteudos"
+							]
+						},
+						"description": "Cria um novo rascunho de conteúdo jurídico. Requer perfil ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Conteúdo",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Como Solicitar Medida Protetiva Online (Atualizado)\",\n    \"corpo\": \"As medidas protetivas podem ser solicitadas eletronicamente na maioria dos estados de forma ágil...\",\n    \"categoria\": \"MEDIDA_PROTETIVA\",\n    \"tags\": \"violencia, lei maria da penha, proteção, online\",\n    \"nivelLinguagem\": \"Fácil\",\n    \"revisadoPor\": \"Maria Silva\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/conteudos/{{conteudoId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"conteudos",
+								"{{conteudoId}}"
+							]
+						},
+						"description": "Atualiza os campos de um conteúdo jurídico existente. Requer perfil ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Conteúdo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/conteudos/{{conteudoId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"conteudos",
+								"{{conteudoId}}"
+							]
+						},
+						"description": "Deleta permanentemente um conteúdo jurídico pelo ID. Requer perfil ADMIN."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Documentos (Provas do Caso)",
+			"item": [
+				{
+					"name": "Upload Documento",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "arquivo",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "categoria",
+									"value": "BO",
+									"type": "text",
+									"description": "Categorias válidas: BO, LAUDO_MEDICO, FOTO, AUDIO, VIDEO, OUTRO"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}/documentos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}",
+								"documentos"
+							]
+						},
+						"description": "Realiza o upload de um documento de prova (máximo de 10MB). Apenas a vítima dona do caso pode fazer o upload, com limite de 20 documentos por caso."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Documentos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}/documentos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}",
+								"documentos"
+							]
+						},
+						"description": "Lista todos os documentos do caso. Advogados voluntários visualizam apenas documentos para os quais possuem permissão concedida pela vítima."
+					},
+					"response": []
+				},
+				{
+					"name": "Download Documento",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}/documentos/{{documentoId}}/download",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}",
+								"documentos",
+								"{{documentoId}}",
+								"download"
+							]
+						},
+						"description": "Realiza o download e descriptografia de um documento. Requer a devida permissão de acesso ao caso e documento."
+					},
+					"response": []
+				},
+				{
+					"name": "Conceder Permissão",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}/documentos/{{documentoId}}/permissao",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}",
+								"documentos",
+								"{{documentoId}}",
+								"permissao"
+							]
+						},
+						"description": "Concede ao advogado voluntário do caso a permissão de visualizar e baixar este documento específico."
+					},
+					"response": []
+				},
+				{
+					"name": "Revogar Permissão",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/casos/{{casoId}}/documentos/{{documentoId}}/permissao",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"casos",
+								"{{casoId}}",
+								"documentos",
+								"{{documentoId}}",
+								"permissao"
+							]
+						},
+						"description": "Revoga a permissão do advogado voluntário de visualizar e baixar este documento específico."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

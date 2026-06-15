@@ -22,6 +22,11 @@ public class AdvogadoController {
     private final AdvogadoService advogadoService;
     private final CasoService casoService;
 
+    @GetMapping
+    public ResponseEntity<List<AdvogadoResponse>> listarAtivos() {
+        return ResponseEntity.ok(advogadoService.listarAtivos());
+    }
+
     @GetMapping("/perfil")
     @PreAuthorize("hasRole('ADVOGADO_VOLUNTARIO')")
     public ResponseEntity<AdvogadoResponse> obterPerfil(
