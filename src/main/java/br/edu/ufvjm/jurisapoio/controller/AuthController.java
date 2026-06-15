@@ -20,33 +20,24 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        // TODO: Delegar para authService.login(request).
-        //       Retornar 200 OK com AuthResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/cadastro/vitima")
     public ResponseEntity<AuthResponse> cadastrarVitima(@Valid @RequestBody CadastroVitimaRequest request) {
-        // TODO: Delegar para authService.cadastrarVitima(request).
-        //       RN02: controller nunca deve solicitar nem repassar nome real ou CPF.
-        //       Retornar 201 CREATED com AuthResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.cadastrarVitima(request));
     }
 
     @PostMapping("/cadastro/advogado")
     public ResponseEntity<AuthResponse> cadastrarAdvogado(@Valid @RequestBody AdvogadoCadastroRequest request) {
-        // TODO: Delegar para authService.cadastrarAdvogado(request).
-        //       RN16: OAB único verificado no service.
-        //       Retornar 201 CREATED com AuthResponse.
-        throw new UnsupportedOperationException("Não implementado");
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.cadastrarAdvogado(request));
     }
 
     @PostMapping("/token/renovar")
     public ResponseEntity<AuthResponse> renovarToken(@RequestHeader("Authorization") String authorizationHeader) {
-        // TODO: Extrair o refresh token do header Authorization (formato "Bearer <token>").
-        //       Delegar para authService.renovarToken(refreshToken).
-        //       RN20: refresh token inválido, expirado ou revogado deve retornar 401.
-        //       Retornar 200 OK com novo AuthResponse contendo novo accessToken e refreshToken.
-        throw new UnsupportedOperationException("Não implementado");
+        String refreshToken = authorizationHeader.startsWith("Bearer ")
+                ? authorizationHeader.substring(7)
+                : authorizationHeader;
+        return ResponseEntity.ok(authService.renovarToken(refreshToken));
     }
 }

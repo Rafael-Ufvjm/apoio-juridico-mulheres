@@ -23,6 +23,8 @@ Thumbs.db
 
 uploads/
 
+postman/
+
 *.suo
 *.ntvs*
 *.njsproj

@@ -12,7 +12,7 @@ spring:
     baseline-on-migrate: true
 
 jwt:
-  segredo: ${JWT_SEGREDO:dev_segredo_base64_nao_usar_em_producao_nao_usar_aqui}
+  segredo: ${JWT_SEGREDO:ZGV2U2VncmVkb0Jhc2U2NE5hb1VzYXJFbVByb2R1Y2FvMTIzNDU2Nzg=}
   expiracao-ms: 86400000
 
 upload:

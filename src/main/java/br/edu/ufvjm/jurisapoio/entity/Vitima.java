@@ -31,6 +31,6 @@ public class Vitima extends Usuario {
     @Override
     protected void prePersist() {
         super.prePersist();
-        aceitouTermos = false;
+        if (aceitouTermos == null) aceitouTermos = false;
     }
 }
