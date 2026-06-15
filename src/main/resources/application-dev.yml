@@ -15,9 +15,6 @@ jwt:
   segredo: ${JWT_SEGREDO:ZGV2U2VncmVkb0Jhc2U2NE5hb1VzYXJFbVByb2R1Y2FvMTIzNDU2Nzg=}
   expiracao-ms: 86400000
 
-upload:
-  diretorio: ./uploads
-
 logging:
   level:
     br.edu.ufvjm.jurisapoio: DEBUG

@@ -29,13 +29,6 @@ public class GlobalExceptionHandler {
                 .body(new ErroResponse(ex.getMessage(), LocalDateTime.now(), 404));
     }
 
-    @ExceptionHandler(ArquivoInvalidoException.class)
-    public ResponseEntity<ErroResponse> handleArquivoInvalido(ArquivoInvalidoException ex) {
-        return ResponseEntity
-                .badRequest()
-                .body(new ErroResponse(ex.getMessage(), LocalDateTime.now(), 400));
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErroResponse> handleValidacao(MethodArgumentNotValidException ex) {
         String mensagem = ex.getBindingResult().getFieldErrors().stream()
