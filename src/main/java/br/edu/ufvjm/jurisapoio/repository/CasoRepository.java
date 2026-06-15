@@ -21,6 +21,8 @@ public interface CasoRepository extends JpaRepository<Caso, UUID> {
 
     List<Caso> findAllByVitimaId(UUID vitimaId);
 
+    List<Caso> findAllByStatus(StatusCaso status);
+
     // RN10: conta casos ativos do advogado
     long countByAdvogadoVoluntarioIdAndStatusIn(UUID advogadoId, List<StatusCaso> statusAtivos);
 }
