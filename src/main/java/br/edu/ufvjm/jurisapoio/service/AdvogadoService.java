@@ -47,6 +47,13 @@ public class AdvogadoService {
         return mapearParaResponse(salvo);
     }
 
+    @Transactional(readOnly = true)
+    public java.util.List<AdvogadoResponse> listarAtivos() {
+        return advogadoVoluntarioRepository.findAllByStatusAprovacao(StatusAprovacao.ATIVO).stream()
+                .map(this::mapearParaResponse)
+                .toList();
+    }
+
     public AdvogadoResponse mapearParaResponse(AdvogadoVoluntario advogado) {
         return new AdvogadoResponse(
                 advogado.getId(),
