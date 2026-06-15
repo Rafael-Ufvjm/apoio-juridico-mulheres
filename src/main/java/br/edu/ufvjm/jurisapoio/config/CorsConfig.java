@@ -12,13 +12,17 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Value("${cors.origens-permitidas:http://localhost:3000,http://localhost:5173}")
+    @Value("${cors.origens-permitidas:http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176}")
     private List<String> origensPermitidas;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(origensPermitidas);
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "http://*.localhost:*"
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Authorization"));
