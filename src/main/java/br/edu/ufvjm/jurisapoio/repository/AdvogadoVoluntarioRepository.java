@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -14,4 +15,6 @@ public interface AdvogadoVoluntarioRepository extends JpaRepository<AdvogadoVolu
     List<AdvogadoVoluntario> findAllByStatusAprovacao(StatusAprovacao status);
 
     boolean existsByNumeroOAB(String numeroOAB);
+
+    Optional<AdvogadoVoluntario> findByEmail(String email);
 }
