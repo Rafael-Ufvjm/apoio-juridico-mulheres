@@ -10,6 +10,7 @@ spring:
         format_sql: true
   flyway:
     baseline-on-migrate: true
+    validate-on-migrate: false
 
 jwt:
   segredo: ${JWT_SEGREDO:ZGV2U2VncmVkb0Jhc2U2NE5hb1VzYXJFbVByb2R1Y2FvMTIzNDU2Nzg=}
