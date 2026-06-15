@@ -24,6 +24,7 @@ Thumbs.db
 uploads/
 
 postman/
+.postman/
 
 *.suo
 *.ntvs*
