@@ -3,6 +3,7 @@ package br.edu.ufvjm.jurisapoio.config;
 import br.edu.ufvjm.jurisapoio.security.JwtFilter;
 import br.edu.ufvjm.jurisapoio.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,6 +44,13 @@ public class SecurityConfig {
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    public FilterRegistrationBean<JwtFilter> jwtFilterRegistration(JwtFilter jwtFilter) {
+        FilterRegistrationBean<JwtFilter> registration = new FilterRegistrationBean<>(jwtFilter);
+        registration.setEnabled(false);
+        return registration;
     }
 
     @Bean
